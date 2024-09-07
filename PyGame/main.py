@@ -404,8 +404,12 @@ def new_game():
     # --------------------[Player]-------------------------------\
 
     # Настройка скорости игрока
-    player_speed = 4
+    player_speed = 2.3
+
+    # Настройка первоначального положения игрока по x
     player_x = 150
+
+    # Настройка первоначального положения игрока по y
     if HEIGHT == 1080:
         player_y = 735
     elif HEIGHT == 720:
@@ -503,15 +507,55 @@ def new_game():
     aptechka_list_in_game = []
     aptechka_rect_x = WIDTH + 50
     if HEIGHT == 1080:
-        aptechka_y = 735
+        aptechka_y = 733
     elif HEIGHT == 720:
-        aptechka_y = 545
+        aptechka_y = 543
     elif HEIGHT == 600:
-        aptechka_y = 445
+        aptechka_y = 443
     aptechka_speed = 3
 
     aptechka_timer = pygame.USEREVENT + 1
     pygame.time.set_timer(aptechka_timer, 5000)
+
+    score_list_in_game = []
+    score_rect_x = WIDTH + 50
+    if HEIGHT == 1080:
+        score_y = 750
+    elif HEIGHT == 720:
+        score_y = 550
+    elif HEIGHT == 600:
+        score_y = 450
+    score_speed = 3
+
+    score_timer = pygame.USEREVENT + 1
+    pygame.time.set_timer(score_timer, 5000)
+
+    diamond_list_in_game = []
+    diamond_rect_x = WIDTH + 50
+    if HEIGHT == 1080:
+        diamond_y = 754
+    elif HEIGHT == 720:
+        diamond_y = 554
+    elif HEIGHT == 600:
+        diamond_y = 454
+    diamond_speed = 3
+
+    diamond_timer = pygame.USEREVENT + 1
+    pygame.time.set_timer(diamond_timer, 5000)
+
+    bullet_list_in_game = []
+    bullet_rect_x = WIDTH + 50
+    if HEIGHT == 1080:
+        bullet_y = 752
+    elif HEIGHT == 720:
+        bullet_y = 562
+    elif HEIGHT == 600:
+        bullet_y = 462
+    bullet_speed = 3
+
+    bullet_timer = pygame.USEREVENT + 1
+    pygame.time.set_timer(bullet_timer, 5000)
+
     # -----------------------------------------------------------
 
     # --------------------[Шрифты,Надписи]-------------------------------
@@ -532,15 +576,24 @@ def new_game():
     # -----------------------------------------------------------
 
     bullets_left = 5
-    bullet = pygame.image.load("images/bullet.png").convert_alpha()
+    bullet_right = pygame.image.load("images/bullet-right.png").convert_alpha()
+    bullet_left = pygame.image.load("images/bullet-left.png").convert_alpha()
+    bullet = pygame.image.load("images/icon-bullets.png").convert_alpha()
+    icon_bullets = pygame.image.load("images/icon-bullets.png").convert_alpha()
     bullets = []
-    icon_bullets = pygame.image.load("images/icon-bullet1.png").convert_alpha()
 
     score = 0
-    nums = 86
-    icon_score = pygame.image.load("images/icon-score.png").convert_alpha()
+    icon_score_image = pygame.image.load("images/score.png").convert_alpha()
+    score_img = pygame.image.load("images/icon-score.png").convert_alpha()
+
+    diamond = 0
+    icon_diamond_image = pygame.image.load("images/diamond.png").convert_alpha()
+    diamond_img = pygame.image.load("images/icon-diamond.png").convert_alpha()
 
     game_over_fon = pygame.image.load("images/gameover.png").convert_alpha()
+
+    # Инициализация переменной направления игрока
+    facing_right = True
 
     # Переменная для отслеживания, продолжается ли игра
     gameplay = True
@@ -566,13 +619,19 @@ def new_game():
                 screen.blit(heart1, (WIDTH / 2 - (252 / 2) + WIDTH / 2.1 + i * 50, 5))
 
             # Отображение количества патронов
-            bullets_list = laber3.render('Патронов: ' + str(bullets_left), False, (250, 252, 252))
-            screen.blit(bullets_list, (10, 10))
-            screen.blit(icon_bullets, (130, 15))
+            bullets_list = laber3.render(str(bullets_left), False, (250, 252, 252))
+            screen.blit(bullets_list, (40, 10))
+            screen.blit(icon_bullets, (15, 10))
 
-            score_list = laber1.render('Счет: ' + str(score), False, (250, 252, 252))
-            screen.blit(score_list, (10, 30))
-            screen.blit(icon_score, (nums, 36))
+            # Отображение количества очков
+            score_list = laber1.render(str(score), False, (250, 252, 252))
+            screen.blit(score_img, (15, 41))
+            screen.blit(score_list, (43, 40))
+
+            # Отображение количества алмазов
+            diamond_list = laber1.render(str(diamond), False, (250, 252, 252))
+            screen.blit(diamond_img, (15, 71))
+            screen.blit(diamond_list, (43, 70))
 
             # Обновление позиции игрока
             player_rect = walk_right[0].get_rect(topleft=(player_x, player_y))
@@ -608,6 +667,52 @@ def new_game():
                             player_health += 1
                         aptechka_list_in_game.pop(i_a)
 
+            check = ri(0, 1000)
+            if check == 2:
+                bullet_list_in_game.append(bullet.get_rect(topleft=(WIDTH, bullet_y)))
+                bullet_rect_x -= 4
+
+            if bullet_list_in_game:
+                for (b_a, el_a) in enumerate(bullet_list_in_game):
+                    screen.blit(bullet, el_a)
+                    el_a.x -= bullet_speed
+                    if el_a.x < -10:
+                        bullet_list_in_game.pop(b_a)
+                    if player_rect.colliderect(el_a):
+                        if bullets_left <= 4:
+                            bullets_left += 1
+                        bullet_list_in_game.pop(b_a)
+
+            check = ri(0, 1000)
+            if check == 2:
+                score_list_in_game.append(icon_score_image.get_rect(topleft=(WIDTH, score_y)))
+                score_rect_x -= 4
+
+            if score_list_in_game:
+                for (i_s, el_s) in enumerate(score_list_in_game):
+                    screen.blit(icon_score_image, el_s)
+                    el_s.x -= score_speed
+                    if el_s.x < -10:
+                        score_list_in_game.pop(i_s)
+                    if player_rect.colliderect(el_s):
+                        score += 100
+                        score_list_in_game.pop(i_s)
+
+            check = ri(0, 1000)
+            if check == 2:
+                diamond_list_in_game.append(icon_diamond_image.get_rect(topleft=(WIDTH, diamond_y)))
+                diamond_rect_x -= 4
+
+            if diamond_list_in_game:
+                for (d_s, el_s) in enumerate(diamond_list_in_game):
+                    screen.blit(icon_diamond_image, el_s)
+                    el_s.x -= diamond_speed
+                    if el_s.x < -10:
+                        diamond_list_in_game.pop(d_s)
+                    if player_rect.colliderect(el_s):
+                        diamond += 1
+                        diamond_list_in_game.pop(d_s)
+
             check = ri(0, 400)
             if check == 2:
                 zombi_list.append(zombi[zombi_anim_count].get_rect(topleft=(zombi_rect_x, zombi_y)))
@@ -627,9 +732,18 @@ def new_game():
             # Настройка хадьбы игрока вперед,назад
             keys = pygame.key.get_pressed()
             if keys[pygame.K_LEFT] or keys[pygame.K_a]:
-                screen.blit(walk_left[player_anim_count], (player_x, player_y))
+                facing_right = False
+                player_x -= player_speed
             else:
+                if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+                    facing_right = True
+                    player_x += player_speed
+
+            # Отрисовка игрока
+            if facing_right:
                 screen.blit(walk_right[player_anim_count], (player_x, player_y))
+            else:
+                screen.blit(walk_left[player_anim_count], (player_x, player_y))
 
             # Настройка границы карты для игрока
             keys = pygame.key.get_pressed()
@@ -667,11 +781,14 @@ def new_game():
                 fon_x = 0
 
             if bullets:
-                for (i, el) in enumerate(bullets):
-                    screen.blit(bullet, (el.x, el.y))
-                    el.x += 3
+                for (i, (el, direction)) in enumerate(bullets):
+                    if facing_right:
+                        screen.blit(bullet_right, (el.x, el.y))
+                    else:
+                        screen.blit(bullet_left, (el.x, el.y))
+                    el.x += direction * 3.5  # Движение в зависимости от направления (вправо или влево)
 
-                    if el.x > WIDTH + 30:
+                    if el.x > WIDTH + 30 or el.x < -30:  # Удаление пуль, вышедших за пределы экрана
                         bullets.pop(i)
 
                     # Проверка столкновений между пулями и призраками
@@ -712,14 +829,15 @@ def new_game():
                 if game:
                     game_music.play(-1)
                     game = False
-                score = 0
-                player_x = 150
+                score = 0   # Сброс монет
+                diamond = 0  # Сброс алмазов
+                player_x = 150  # Сброс положения игрока
                 player_health = 3  # Сброс здоровья игрока
-                ghost_list_in_game.clear()
-                aptechka_list_in_game.clear()
-                zombi_list.clear()
-                bullets.clear()
-                bullets_left = 5
+                ghost_list_in_game.clear()  # Удаление всех призраков
+                aptechka_list_in_game.clear()  # Удаление всех аптечек
+                zombi_list.clear()  # Удаление всех зомби
+                bullets.clear()  # Удаление всех патронов
+                bullets_left = 5  # Сброс патронов
 
         # Обновление дисплея
         pygame.display.update()
@@ -741,8 +859,14 @@ def new_game():
                     menu_esc()
 
             # Настройки снаряда
-            if gameplay and event.type == pygame.KEYUP and event.key == pygame.K_b and bullets_left > 0:
-                bullets.append(bullet.get_rect(topleft=(player_x + 30, player_y + 10)))
+            if event.type == pygame.KEYUP and event.key == pygame.K_b and bullets_left > 0:
+                direction = 1 if facing_right else -1
+                if facing_right:
+                    new_bullet = bullet_right.get_rect(topleft=(player_x + (30 if facing_right else -10), player_y + 10))
+                else:
+                    new_bullet = bullet_left.get_rect(
+                        topleft=(player_x + (30 if facing_right else -10), player_y + 10))
+                bullets.append((new_bullet, direction))
                 bullets_left -= 1
 
         clock.tick(MAX_FPS)

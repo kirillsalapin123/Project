@@ -1,5 +1,7 @@
 import pygame
 
+# Класс для создание кнопок
+
 
 class ImageButton:
     def __init__(self, x, y, width, height, text, image_path, hover_image_path=None, sound_path=None):
