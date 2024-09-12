@@ -404,7 +404,7 @@ def new_game():
     # --------------------[Player]-------------------------------\
 
     # Настройка скорости игрока
-    player_speed = 2.3
+    player_speed = 4
 
     # Настройка первоначального положения игрока по x
     player_x = 150
@@ -514,9 +514,6 @@ def new_game():
         aptechka_y = 443
     aptechka_speed = 3
 
-    aptechka_timer = pygame.USEREVENT + 1
-    pygame.time.set_timer(aptechka_timer, 5000)
-
     score_list_in_game = []
     score_rect_x = WIDTH + 50
     if HEIGHT == 1080:
@@ -527,11 +524,8 @@ def new_game():
         score_y = 450
     score_speed = 3
 
-    score_timer = pygame.USEREVENT + 1
-    pygame.time.set_timer(score_timer, 5000)
-
     diamond_list_in_game = []
-    diamond_rect_x = WIDTH + 50
+    diamond_rect_x = WIDTH + 100
     if HEIGHT == 1080:
         diamond_y = 754
     elif HEIGHT == 720:
@@ -539,9 +533,6 @@ def new_game():
     elif HEIGHT == 600:
         diamond_y = 454
     diamond_speed = 3
-
-    diamond_timer = pygame.USEREVENT + 1
-    pygame.time.set_timer(diamond_timer, 5000)
 
     bullet_list_in_game = []
     bullet_rect_x = WIDTH + 50
@@ -552,9 +543,6 @@ def new_game():
     elif HEIGHT == 600:
         bullet_y = 462
     bullet_speed = 3
-
-    bullet_timer = pygame.USEREVENT + 1
-    pygame.time.set_timer(bullet_timer, 5000)
 
     # -----------------------------------------------------------
 
@@ -729,13 +717,13 @@ def new_game():
                         player_health -= 1
                         zombi_list.pop(i_z)
 
-            # Настройка хадьбы игрока вперед,назад
+            # Настройка границы карты и хадьбы игрока вперед,назад
             keys = pygame.key.get_pressed()
-            if keys[pygame.K_LEFT] or keys[pygame.K_a]:
+            if keys[pygame.K_LEFT] and player_x > -5 or keys[pygame.K_a] and player_x > -5:
                 facing_right = False
                 player_x -= player_speed
             else:
-                if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+                if keys[pygame.K_RIGHT] and player_x < WIDTH - 40 or keys[pygame.K_d] and player_x < WIDTH - 40:
                     facing_right = True
                     player_x += player_speed
 
@@ -744,13 +732,6 @@ def new_game():
                 screen.blit(walk_right[player_anim_count], (player_x, player_y))
             else:
                 screen.blit(walk_left[player_anim_count], (player_x, player_y))
-
-            # Настройка границы карты для игрока
-            keys = pygame.key.get_pressed()
-            if keys[pygame.K_LEFT] and player_x > 0 or keys[pygame.K_a] and player_x > 0:
-                player_x -= player_speed
-            if keys[pygame.K_RIGHT] and player_x < WIDTH - 40 or keys[pygame.K_d] and player_x < WIDTH - 40:
-                player_x += player_speed
 
             # Логика прыжка
             if not is_jumping:
